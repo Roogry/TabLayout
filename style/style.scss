@@ -1,0 +1,283 @@
+/* colors */
+$primary: #017CFE;
+$dark: #333;
+
+$accent: $primary;
+$secondary: desaturate($accent, 85%);
+
+/* tab setting */
+$tab-count: 3;
+$indicator-height: 4px;
+
+/* breakpoints */
+$breakpoints: (medium: #{$tab-count*250px},
+  small: #{$tab-count*150px});
+
+
+/* selectors relative to radio inputs */
+$label-selector: "~ ul > li";
+$slider-selector: "~ .slider";
+$content-selector: "~ .content > .content-container";
+
+@mixin tabs($label-selector: $label-selector,
+  $slider-selector: $slider-selector,
+  $content-selector: $content-selector) {
+
+  @for $i from 1 through $tab-count {
+    &:nth-of-type(#{$i}):checked {
+      #{$label-selector}:nth-child(#{$i}) {
+        @content;
+      }
+
+      #{$slider-selector} {
+        transform: translateX(#{100% * ($i - 1)});
+      }
+
+      #{$content-selector} {
+        @if $i==1 {
+          transform: translateX(0);
+        }
+
+        @else if $i==2 {
+          transform: translateX(-100%);
+        }
+
+        @else if $i==3 {
+          transform: translateX(-200%);
+        }
+      }
+    }
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  color: $dark;
+  font-family: "Popins";
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 12px;
+  padding: 40px 0;
+
+  h1 {
+    color: $accent;
+    font-weight: 600;
+    margin: 0;
+    font-size: 36px;
+  }
+
+  p {
+    font-size: 22px;
+    margin-top: 10px;
+  }
+
+  @media only screen and (max-width: 1000px) {
+    width: 100%;
+  }
+}
+
+.tabs {
+  position: relative;
+  background: white;
+  width: 70%;
+  height: 400px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  border-radius: 15px;
+  min-width: #{$tab-count * 60px};
+  margin: auto;
+  overflow: hidden;
+
+  input[name="tab-control"] {
+    display: none;
+  }
+
+  .content section h2,
+  ul li label {
+    font-weight: bold;
+    font-size: 18px;
+    color: $accent;
+  }
+
+  ul {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    li {
+      width: #{100%/$tab-count};
+      text-align: center;
+
+      label {
+        transition: all 0.3s ease-in-out;
+        color: $secondary;
+        padding: 5px auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        cursor: pointer;
+        white-space: nowrap;
+        -webkit-touch-callout: none;
+        padding: 24px 16px;
+
+        br {
+          display: none;
+        }
+
+        img {
+          filter: grayscale(100%);
+          height: 20px;
+          vertical-align: bottom;
+          margin-right: 0.2em;
+        }
+
+        &:hover,
+        &:focus,
+        &:active {
+          outline: 0;
+          opacity: 80%;
+        }
+      }
+    }
+  }
+
+  .slider {
+    position: relative;
+    width: #{100%/$tab-count};
+    transition: all 0.33s cubic-bezier(0.38, 0.8, 0.32, 1.07);
+
+    .indicator {
+      max-width: 100%;
+      height: $indicator-height;
+      background: $accent;
+      border-radius: 1px;
+    }
+
+  }
+
+  .content {
+    overflow: hidden;
+
+    &-container {
+      display: flex;
+      -webkit-box-align: start;
+      align-items: flex-start;
+      transition: all 0.3s ease-in-out;
+      transform: translatex(0);
+      width: 100%;
+
+      .content-item {
+        width: 100%;
+        padding: 32px 32px;
+        line-height: 1.4;
+        flex-shrink: 0;
+
+        h2 {
+          color: $accent;
+          display: none;
+          margin-top: 15px;
+          margin-bottom: 5px;
+        }
+
+        hr{
+          height: 4px;
+          width: 25%;
+          display: none;
+          background-color: $accent;
+          margin-left: 0;
+          margin-bottom: 16px;
+        }
+
+        p{
+          margin: 0;
+        }
+      }
+    }
+
+  }
+
+  input[name="tab-control"] {
+    @include tabs {
+      >label {
+        cursor: default;
+        color: $accent;
+
+        img {
+          filter: none;
+        }
+
+        @media (max-width: map-get($breakpoints, small)) {
+          background: rgba(0, 0, 0, 0.08);
+        }
+      }
+    }
+  }
+
+  @media (max-width: map-get($breakpoints, medium)) {
+    ul li label {
+      white-space: initial;
+
+      br {
+        display: initial;
+      }
+
+      img {
+        height: 1.5em;
+      }
+    }
+  }
+
+  @media (max-width: map-get($breakpoints, small)) {
+    ul {
+      padding: 16px 16px 0 16px;
+
+      li {
+        margin: 0;
+        padding-bottom: 0;
+        padding-left: 0;
+        padding-right: 0;
+
+        label {
+          padding: 10px;
+          border-radius: 5px;
+
+          span {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .slider {
+      display: none;
+    }
+
+    .content {
+      padding: 0;
+
+      &-item{
+        padding: 0 16px !important;
+        height: 100%;
+
+        h2{
+          display: block !important;
+        }
+
+        hr{
+          display: block !important;
+        }
+      }
+    }
+  }
+}
